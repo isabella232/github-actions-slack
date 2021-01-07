@@ -11,6 +11,15 @@ inputs:
   channel:
     description: Override default channel with different channel or username
     required: false
+  repo:
+    description: Repository that triggers the event
+    required: false
+  user:
+    description: User that triggers the event
+    required: false
+  run_id:
+    description: Workflow run ID that triggers the event
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'

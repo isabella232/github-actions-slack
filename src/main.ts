@@ -17,9 +17,12 @@ async function run(): Promise<void> {
     const jobStatus = core.getInput('status', {required: true}).toUpperCase()
     const jobSteps = JSON.parse(core.getInput('steps', {required: false}) || '{}')
     const channel = core.getInput('channel', {required: false})
+    const triggerRepositoryName = core.getInput('repo', {required: false})
+    const triggerUserName = core.getInput('user', {required: false})
+    const triggerRunId = core.getInput('run_id', {required: false})
 
     if (url) {
-      await send(url, jobName, jobStatus, jobSteps, channel)
+      await send(url, jobName, jobStatus, jobSteps, channel, triggerRepositoryName, triggerUserName, triggerRunId)
       core.debug('Sent to Slack.')
     } else {
       core.info('No "SLACK_WEBHOOK_URL" secret configured. Skip.')

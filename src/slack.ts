@@ -22,7 +22,10 @@ async function send(
   jobName: string,
   jobStatus: string,
   jobSteps: object,
-  channel?: string
+  channel?: string,
+  triggerRepositoryName?: string,
+  triggerUserName?: string,
+  triggerRunId?: string
 ): Promise<IncomingWebhookResult> {
   const eventName = process.env.GITHUB_EVENT_NAME
   const workflow = process.env.GITHUB_WORKFLOW
@@ -32,6 +35,10 @@ async function send(
   const runId = process.env.GITHUB_RUN_ID
   const runNumber = process.env.GITHUB_RUN_NUMBER
   const workflowUrl = `${repositoryUrl}/actions/runs/${runId}`
+
+  const triggerRepositoryUrl = `${process.env.GITHUB_SERVER_URL}/${triggerRepositoryName}`
+  const triggerUserUrl = `${process.env.GITHUB_SERVER_URL}/${triggerUserName}`
+  const triggerRunUrl = `${triggerRepositoryUrl}/actions/runs/${triggerRunId}`
 
   const sha = process.env.GITHUB_SHA as string
   const shortSha = sha.slice(0, 8)
@@ -116,11 +123,17 @@ async function send(
     }
   }
 
-  const text = `${jobStatus == 'FAILURE' ?  '<!here>' : ''}
+  let text = `${jobStatus == 'FAILURE' ?  '<!here>' : ''}
   *${jobStatus}*: <${workflowUrl}|${workflow}> on <${refUrl}|${ref}>
   Author: <${sender?.html_url}|${sender?.login}>
   Repo: <${repositoryUrl}|${repositoryName}>
   ${last_step ? `Step: ${last_step}` : ''}`
+
+  if (triggerRepositoryName != '') {
+    text = `${jobStatus == 'FAILURE' ?  '<!here>' : ''}
+  *${jobStatus}*: <${workflowUrl}|${workflow}> triggered by <${triggerRunUrl}|${triggerRepositoryName}>
+  Author: <${triggerUserUrl}|${triggerUserName}>`
+  }
 
   const message = {
     username: 'GitHub Actions',
