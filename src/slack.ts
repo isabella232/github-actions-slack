@@ -23,6 +23,7 @@ async function send(
   jobStatus: string,
   jobSteps: object,
   channel?: string,
+  hereMention?: boolean,
   triggerRepositoryName?: string,
   triggerUserName?: string,
   triggerRunId?: string
@@ -123,14 +124,14 @@ async function send(
     }
   }
 
-  let text = `${jobStatus == 'FAILURE' ?  '<!here>' : ''}
+  let text = `${jobStatus == 'FAILURE' && hereMention ?  '<!here>' : ''}
   *${jobStatus}*: <${workflowUrl}|${workflow}> on <${refUrl}|${ref}>
   Author: <${sender?.html_url}|${sender?.login}>
   Repo: <${repositoryUrl}|${repositoryName}>
   ${last_step ? `Step: ${last_step}` : ''}`
 
   if (triggerRepositoryName != '') {
-    text = `${jobStatus == 'FAILURE' ?  '<!here>' : ''}
+    text = `${jobStatus == 'FAILURE' && hereMention ?  '<!here>' : ''}
   *${jobStatus}*: <${workflowUrl}|${workflow}> triggered by <${triggerRunUrl}|${triggerRepositoryName}>
   Author: <${triggerUserUrl}|${triggerUserName}>`
   }

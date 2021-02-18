@@ -11,6 +11,10 @@ inputs:
   channel:
     description: Override default channel with different channel or username
     required: false
+  here-mention:
+    description: Use @here when failure
+    required: false
+    default: true
   repo:
     description: Repository that triggers the event
     required: false

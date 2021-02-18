@@ -1423,11 +1423,12 @@ function run() {
             const jobStatus = core.getInput('status', { required: true }).toUpperCase();
             const jobSteps = JSON.parse(core.getInput('steps', { required: false }) || '{}');
             const channel = core.getInput('channel', { required: false });
+            const hereMention = (core.getInput('here-mention', { required: false }) || 'true').toLowerCase() === 'true';
             const triggerRepositoryName = core.getInput('repo', { required: false });
             const triggerUserName = core.getInput('user', { required: false });
             const triggerRunId = core.getInput('run_id', { required: false });
             if (url) {
-                yield slack_1.default(url, jobName, jobStatus, jobSteps, channel, triggerRepositoryName, triggerUserName, triggerRunId);
+                yield slack_1.default(url, jobName, jobStatus, jobSteps, channel, hereMention, triggerRepositoryName, triggerUserName, triggerRunId);
                 core.debug('Sent to Slack.');
             }
             else {
@@ -6786,7 +6787,7 @@ function stepIcon(status) {
         return ':no_entry_sign:';
     return `:grey_question: ${status}`;
 }
-function send(url, jobName, jobStatus, jobSteps, channel, triggerRepositoryName, triggerUserName, triggerRunId) {
+function send(url, jobName, jobStatus, jobSteps, channel, hereMention, triggerRepositoryName, triggerUserName, triggerRunId) {
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         const eventName = process.env.GITHUB_EVENT_NAME;
@@ -6871,13 +6872,13 @@ function send(url, jobName, jobStatus, jobSteps, channel, triggerRepositoryName,
                 }
             }
         }
-        let text = `${jobStatus == 'FAILURE' ? '<!here>' : ''}
+        let text = `${jobStatus == 'FAILURE' && hereMention ? '<!here>' : ''}
   *${jobStatus}*: <${workflowUrl}|${workflow}> on <${refUrl}|${ref}>
   Author: <${sender === null || sender === void 0 ? void 0 : sender.html_url}|${sender === null || sender === void 0 ? void 0 : sender.login}>
   Repo: <${repositoryUrl}|${repositoryName}>
   ${last_step ? `Step: ${last_step}` : ''}`;
         if (triggerRepositoryName != '') {
-            text = `${jobStatus == 'FAILURE' ? '<!here>' : ''}
+            text = `${jobStatus == 'FAILURE' && hereMention ? '<!here>' : ''}
   *${jobStatus}*: <${workflowUrl}|${workflow}> triggered by <${triggerRunUrl}|${triggerRepositoryName}>
   Author: <${triggerUserUrl}|${triggerUserName}>`;
         }
